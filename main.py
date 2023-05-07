@@ -154,3 +154,4 @@ async def шутка(ctx):
     time.sleep
     joke = random.randint(1, 10)
     await ctx.send(f'{jokes[joke]}')
+bot.run("your token")
