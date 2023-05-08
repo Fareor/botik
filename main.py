@@ -1,4 +1,6 @@
+import datetime
 import discord
+import json
 import random
 import requests
 import time
@@ -6,6 +8,83 @@ from discord.ext import commands
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
+users = {}
+with open('savefile.json') as aw:
+    users = json.load(aw)
+print(users)
+def save():
+    with open("savefile.json", "w") as f:
+        json.dump(users, f)
+
+
+@bot.command()
+async def ноль(ctx):
+    da = (ctx.author.name + '#' + ctx.author.discriminator)
+    users[da] = ['balance']
+    users[da]['balance'] = 0
+    users[da] = ['prof']
+    users[da]['prof'] = 'none'
+    await ctx.send(f'Вы успешно зарегестрировали себя!')
+    save()
+
+@bot.command()
+async def команды(ctx):
+    embed = discord.Embed(title='Команды:', description='ноль - команда для регистрации твоего кошелька \n'
+    
+    'или обнулирования уже существуещего\n'
+    
+    'баланс - посмотреть свой баланс, вопросы? \n'
+                                                        
+    'работать - заработать денюшек, доступно лишь раз в 12 часов \n'
+                                                        
+    'монетка - просто напишет орёл или решка \n'
+                                                        
+    'кнб - поиграть в камень, ножницы, бумага (!кнб камень) \n'
+                                                        
+    'рандом - даёт рандомное число (!рандом 100) \n'
+                                                        
+    'шлёпа - рандомный шлёпа с разными редкостями \n'
+                                                        
+    'собака - рандомная пикча собачки \n'
+                                                        
+    'шутка - 10 рандомных анекдотов \n',
+    color=discord.Color.yellow())
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def баланс(ctx):
+    da = (ctx.author.name + '#' + ctx.author.discriminator)
+    if da in users:
+        await ctx.send(f'Баланс пользователя {ctx.author.name}: '
+                            f'{users[da]}')
+    else:
+        embed = discord.Embed(title='У вас нет кошелька!', description='Просто напиши команду рег и снова воспользуйся командой!', color=discord.Color.yellow())
+        await ctx.send(embed=embed)
+
+
+@bot.command()
+@commands.cooldown(1, 720, commands.BucketType.user)
+async def работать(ctx):
+    da = (ctx.author.name + '#' + ctx.author.discriminator)
+    if da in users:
+        moneys = random.randint(30, 100)
+        await ctx.send(f'За день вы заработали: '
+                       f'{moneys}')
+        users[da] += moneys
+        save()
+    else:
+        embed = discord.Embed(title='У вас нет кошелька!', description='Просто напиши команду рег и снова воспользуйся командой!', color=discord.Color.yellow())
+        await ctx.send(embed=embed)
+
+
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        retry_after = str(datetime.timedelta(seconds=error.retry_after)).split('.')[0]
+        embed = discord.Embed(title='На команде установлен cooldown.', description=f'Вы сможете заного воспользоваться командой через: {retry_after}', color=discord.Color.yellow())
+        await ctx.send(embed=embed)
 
 @bot.event
 async def on_ready():
@@ -151,7 +230,12 @@ async def шутка(ctx):
             10: 'Жили два друга, еврей и американец, обоим по 70 и в приюте. Друг еврей заболевает'
             'и перед смертью говорит: «За километр отсюда, под одиноким деревом, зарыто сокровище с деньгами,'
             'на эти деньги ты сможешь дожить жизнь счастливо» и умирает. Друг американец спрашивает: « Что такое километр»'}
-    time.sleep
+    time.sleep(1)
     joke = random.randint(1, 10)
     await ctx.send(f'{jokes[joke]}')
-bot.run("your token")
+
+
+
+
+
+bot.run("MTA5NzEyNzY5NDY2MTA3MDg1MA.GAhVaC.L8QWWkxteKznkW0KwgikVczR-kG7aTWTrAhaos")
