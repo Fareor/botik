@@ -238,4 +238,4 @@ async def шутка(ctx):
 
 
 
-bot.run("MTA5NzEyNzY5NDY2MTA3MDg1MA.GAhVaC.L8QWWkxteKznkW0KwgikVczR-kG7aTWTrAhaos")
+bot.run("")
